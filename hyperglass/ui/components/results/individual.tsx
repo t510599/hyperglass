@@ -28,7 +28,7 @@ import {
   useStrf,
   useTableToString,
 } from '~/hooks';
-import { isStringOutput, isStructuredOutput } from '~/types';
+import { isPingOutput, isStringOutput, isStructuredOutput } from '~/types';
 import { CopyButton } from './copy-button';
 import { FormattedError } from './formatted-error';
 import { isFetchError, isLGError, isLGOutputOrError, isStackError } from './guards';
@@ -143,20 +143,25 @@ const _Result: React.ForwardRefRenderFunction<HTMLDivElement, ResultProps> = (
     return messages.general;
   }, [error, data, messages.general, messages.requestTimeout]);
 
-  const tableComponent = useMemo<boolean>(() => {
-    let result = false;
-    if (data?.format === 'application/json') {
-      result = true;
+  const tableComponent = useMemo<boolean>(() => isStructuredOutput(data), [data]);
+
+  const pingLatency = useMemo<number | null>(() => {
+    if (isPingOutput(data)) {
+      return data.output.latency;
     }
-    return result;
-  }, [data?.format]);
+    return null;
+  }, [data]);
 
   let copyValue = data?.output as string;
 
   const formatData = useTableToString(form.queryTarget, data, [data?.format]);
 
-  if (data?.format === 'application/json') {
+  if (isStructuredOutput(data)) {
     copyValue = formatData();
+  }
+
+  if (isPingOutput(data)) {
+    copyValue = data.output.output;
   }
 
   if (error) {
@@ -210,6 +215,7 @@ const _Result: React.ForwardRefRenderFunction<HTMLDivElement, ResultProps> = (
             errorMsg={errorMsg}
             errorLevel={errorLevel}
             runtime={data?.runtime ?? 0}
+            latency={pingLatency}
             title={device.name}
           />
         </AccordionButton>
@@ -246,6 +252,8 @@ const _Result: React.ForwardRefRenderFunction<HTMLDivElement, ResultProps> = (
               <Then>
                 {isStructuredOutput(data) && data.level === 'success' && tableComponent ? (
                   <BGPTable>{data.output}</BGPTable>
+                ) : isPingOutput(data) && data.level === 'success' ? (
+                  <TextOutput>{data.output.output}</TextOutput>
                 ) : isStringOutput(data) && data.level === 'success' && !tableComponent ? (
                   <TextOutput>{data.output}</TextOutput>
                 ) : isStringOutput(data) && data.level !== 'success' ? (

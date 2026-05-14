@@ -34,12 +34,19 @@ export declare global {
 
   type RouteField = { [K in keyof Route]: Route[K] };
 
-  type StructuredResponse = {
+  type BGPRouteTableResponse = {
     vrf: string;
     count: number;
     routes: Route[];
     winning_weight: 'high' | 'low';
   };
+
+  type PingResponse = {
+    output: string;
+    latency: number;
+  };
+
+  type StructuredResponse = BGPRouteTableResponse;
 
   type QueryResponse = {
     random: string;
@@ -48,7 +55,7 @@ export declare global {
     level: ResponseLevel;
     timestamp: string;
     keywords: string[];
-    output: string | StructuredResponse;
+    output: string | StructuredResponse | PingResponse;
     format: 'text/plain' | 'application/json';
   };
 

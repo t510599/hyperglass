@@ -1,6 +1,7 @@
 """Built-in hyperglass plugins."""
 
 # Local
+from .ping import PingPlugin
 from .bgp_route_frr import BGPRoutePluginFrr
 from .remove_command import RemoveCommand
 from .bgp_route_arista import BGPRoutePluginArista
@@ -14,5 +15,6 @@ __all__ = (
     "BGPRoutePluginJuniper",
     "BGPRoutePluginHuawei",
     "MikrotikGarbageOutput",
+    "PingPlugin",
     "RemoveCommand",
 )

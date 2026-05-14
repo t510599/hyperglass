@@ -10,4 +10,6 @@ export type StringTableData = Swap<QueryResponse, 'output', StructuredResponse>;
 
 export type StringQueryResponse = Swap<QueryResponse, 'output', string>;
 
+export type PingQueryResponse = Swap<QueryResponse, 'output', PingResponse>;
+
 export type ErrorLevels = 'success' | 'warning' | 'error';

@@ -1,4 +1,4 @@
-import type { FormData, StringTableData, StringQueryResponse } from './data';
+import type { FormData, PingQueryResponse, StringTableData, StringQueryResponse } from './data';
 import type { DirectiveSelect, Directive, Link, Menu } from './config';
 
 export function isString(a: unknown): a is string {
@@ -16,12 +16,28 @@ export function isObject<T extends unknown = unknown>(
 }
 
 export function isStructuredOutput(data: unknown): data is StringTableData {
-  return isObject(data) && 'output' in data;
+  return (
+    isObject<{ output: unknown }>(data) &&
+    'output' in data &&
+    isObject<{ routes: unknown }>(data.output) &&
+    'routes' in data.output &&
+    Array.isArray(data.output.routes)
+  );
 }
 
 export function isStringOutput(data: unknown): data is StringQueryResponse {
   return (
     isObject(data) && 'output' in data && typeof (data as { output: unknown }).output === 'string'
+  );
+}
+
+export function isPingOutput(data: unknown): data is PingQueryResponse {
+  return (
+    isObject<{ output: unknown }>(data) &&
+    'output' in data &&
+    isObject<{ output: unknown; latency: unknown }>(data.output) &&
+    typeof data.output.output === 'string' &&
+    typeof data.output.latency === 'number'
   );
 }
 

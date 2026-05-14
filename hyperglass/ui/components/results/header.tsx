@@ -1,4 +1,4 @@
-import { AccordionIcon, Box, HStack, Spinner, Text, Tooltip } from '@chakra-ui/react';
+import { AccordionIcon, Badge, Box, HStack, Spinner, Text, Tooltip } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useConfig } from '~/context';
 import { DynamicIcon } from '~/elements';
@@ -13,6 +13,7 @@ interface ResultHeaderProps {
   errorMsg: string;
   errorLevel: ErrorLevels;
   runtime: number;
+  latency?: number | null;
 }
 
 const runtimeText = (runtime: number, text: string): string => {
@@ -24,7 +25,7 @@ const runtimeText = (runtime: number, text: string): string => {
 };
 
 export const ResultHeader = (props: ResultHeaderProps): JSX.Element => {
-  const { title, loading, isError, errorMsg, errorLevel, runtime } = props;
+  const { title, loading, isError, errorMsg, errorLevel, runtime, latency } = props;
 
   const status = useColorValue('primary.500', 'primary.300');
   const warning = useColorValue(`${errorLevel}.500`, `${errorLevel}.300`);
@@ -62,6 +63,19 @@ export const ResultHeader = (props: ResultHeaderProps): JSX.Element => {
       </Tooltip>
 
       <Text fontSize="lg">{title}</Text>
+      {typeof latency === 'number' && (
+        <Tooltip hasArrow placement="top" label="Average ping latency">
+          <Badge
+            colorScheme="primary"
+            fontFamily="mono"
+            fontSize="sm"
+            fontWeight="normal"
+            textTransform="none"
+          >
+            {latency.toFixed(3)} ms
+          </Badge>
+        </Tooltip>
+      )}
       <AccordionIcon ml="auto" />
     </HStack>
   );
